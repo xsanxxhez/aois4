@@ -23,13 +23,15 @@ public class D8421Converter {
     }
 
     public static void printTable(List<int[]> table) {
-        System.out.println("x1 x2 x3 x4");
-        for (int[] row : table) {
-            for (int bit : row) {
-                System.out.print(bit + " ");
-            }
-            System.out.println();
+        System.out.println("╔════╦═════╦═════╦═════╦═════╗");
+        System.out.println("║ 10 ║ x1  ║ x2  ║ x3  ║ x4  ║");
+        System.out.println("╠════╬═════╬═════╬═════╬═════╣");
+        for (int i = 0; i < table.size(); i++) {
+            int[] row = table.get(i);
+            System.out.printf("║ %-2d ║  %-1d  ║  %-1d  ║  %-1d  ║  %-1d  ║%n",
+                    i, row[0], row[1], row[2], row[3]);
         }
+        System.out.println("╚════╩═════╩═════╩═════╩═════╝");
     }
 
     public static List<String> generateSDNFForBit(List<int[]> table, String[] bits, int bitIndex) {
@@ -41,9 +43,11 @@ public class D8421Converter {
                 for (int j = 0; j < bits.length; j++) {
                     clause.add(row[j] == 1 ? bits[j] : "!" + bits[j]);
                 }
+                // Через пробел, не через " ∧ "
                 result.add(String.join(" ", clause));
             }
         }
         return result;
     }
+
 }

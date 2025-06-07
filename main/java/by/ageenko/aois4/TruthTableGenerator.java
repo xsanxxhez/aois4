@@ -21,13 +21,32 @@ public class TruthTableGenerator {
     }
 
     public static void printTable(List<int[]> table, String[] vars) {
-        String header = String.join(" ", vars) + " | S C(out)";
+        int colWidth = 3;
+        StringBuilder header = new StringBuilder();
+
+        // Построение заголовка
+        for (String var : vars) {
+            header.append(String.format("%-" + colWidth + "s", var));
+        }
+        header.append("| ");
+        header.append(String.format("%-" + colWidth + "s", "S"));
+        header.append(String.format("%-" + colWidth + "s", "C(out)"));
+
+        // Вывод заголовка
         System.out.println(header);
+        System.out.println("-".repeat(header.length()));
+
+        // Вывод строк таблицы
         for (int[] row : table) {
-            for (int value : row) {
-                System.out.print(value + " ");
+            StringBuilder line = new StringBuilder();
+            for (int i = 0; i < row.length; i++) {
+                line.append(String.format("%-" + colWidth + "d", row[i]));
+                if (i == vars.length - 1) {
+                    line.append("| ");
+                }
             }
-            System.out.println();
+            System.out.println(line);
         }
     }
+
 }

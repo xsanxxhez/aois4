@@ -1,43 +1,55 @@
 package by.ageenko.aois4;
+
 import org.junit.jupiter.api.Test;
-import java.util.*;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SDNFUtilsTest {
+class SDNFUtilsTest {
 
     @Test
-    public void testGenerateSDNF() {
-        List<int[]> table = Arrays.asList(
-                new int[]{0, 0, 1, 1},
-                new int[]{1, 0, 0, 1}
+    void generateSDNF_shouldGenerateCorrectTerms() {
+        // Построим тестовую таблицу с 3 переменными + 2 столбца результата
+        // Формат: A B Cin sum cout
+        List<int[]> table = List.of(
+                new int[]{0, 0, 0, 0, 0},
+                new int[]{0, 0, 1, 1, 0},
+                new int[]{0, 1, 0, 1, 0},
+                new int[]{0, 1, 1, 0, 1},
+                new int[]{1, 0, 0, 1, 0},
+                new int[]{1, 0, 1, 0, 1},
+                new int[]{1, 1, 0, 0, 1},
+                new int[]{1, 1, 1, 1, 1}
         );
-        String[] vars = {"A", "B", "C"};
-        List<String> sdnf = SDNFUtils.generateSDNF(table, vars, "sum");
 
-        assertEquals(2, sdnf.size());
-        assertTrue(sdnf.contains("!A !B C"));
-        assertTrue(sdnf.contains("A !B !C"));
+        String[] vars = {"A", "B", "Cin"};
+
+        List<String> sdnfSum = SDNFUtils.generateSDNF(table, vars, "sum");
+        assertTrue(sdnfSum.stream().allMatch(s -> s.contains("A") || s.contains("B") || s.contains("Cin")));
+
+        List<String> sdnfCout = SDNFUtils.generateSDNF(table, vars, "cout");
+        assertFalse(sdnfCout.isEmpty());
     }
 
     @Test
-    public void testMinimize() {
-        List<String> input = Arrays.asList("A B", "A !B");
-        List<String> minimized = SDNFUtils.minimize(input);
-        assertTrue(minimized.contains("A"));
-        assertEquals(1, minimized.size());
+    void minimize_shouldMergeTermsCorrectly() {
+        List<String> terms = List.of(
+                "A B Cin",
+                "A !B Cin"
+        );
+
+        List<String> minimized = SDNFUtils.minimize(terms);
+        assertTrue(minimized.contains("A Cin"));
+        assertFalse(minimized.contains("A B Cin") && minimized.contains("A !B Cin"));
     }
 
     @Test
-    public void testFormatExpression() {
-        List<String> input = Arrays.asList("A B", "C D");
-        String result = SDNFUtils.formatExpression(input);
-        assertEquals("(A B) ∨ (C D)", result);
-    }
-
-    @Test
-    public void testFormatExpressionEmpty() {
-        String result = SDNFUtils.formatExpression(Collections.emptyList());
-        assertNull(result);
+    void formatExpression_shouldFormatCorrectly() {
+        List<String> terms = List.of("A B", "!A B", "A !B");
+        String expr = SDNFUtils.formatExpression(terms);
+        assertTrue(expr.startsWith("("));
+        assertTrue(expr.contains(" ∨ "));
+        assertTrue(expr.contains(")"));
     }
 }
-

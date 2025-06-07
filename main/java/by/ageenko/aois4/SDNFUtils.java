@@ -1,6 +1,7 @@
 package by.ageenko.aois4;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SDNFUtils {
     public static List<String> generateSDNF(List<int[]> table, String[] vars, String type) {
@@ -62,7 +63,9 @@ public class SDNFUtils {
     }
 
     public static String formatExpression(List<String> terms) {
-        if (terms == null || terms.isEmpty()) return null;
-        return String.join(" ∨ ", terms.stream().map(t -> "(" + t + ")").toArray(String[]::new));
+        return terms.stream()
+                .map(term -> "(" + term.replaceAll("\\s+", " ").replaceAll(" ∧ $", "").trim() + ")")
+                .collect(Collectors.joining(" ∨ "));
     }
+
 }
